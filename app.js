@@ -8,7 +8,6 @@ const nameInput = document.getElementById('full-name');
 const phoneInput = document.getElementById('phone');
 const boxes = [...form.querySelectorAll('[name="slot"]')];
 const status = document.getElementById('status');
-const loadStatus = document.getElementById('load-status');
 const submitButton = form.querySelector('[type="submit"]');
 let saved = [];
 let busy = false;
@@ -44,9 +43,8 @@ async function refresh() {
     if (!response.ok) throw new Error('Load failed');
     saved = await response.json();
     loaded = true;
-    loadStatus.textContent = boxes.every(box => saved.some(row => row.slot === Number(box.value))) ? 'All volunteer slots are filled. Thank you!' : '';
-  } catch {
-    loadStatus.textContent = 'Unable to refresh saved names. Retrying shortly.';
+  } catch (error) {
+    console.error('Unable to refresh saved names.', error);
   } finally { refreshing = false; render(); }
 }
 form.addEventListener('input', render);
@@ -60,13 +58,17 @@ form.addEventListener('reset', event => {
 form.addEventListener('submit', async event => {
   event.preventDefault();
   validate();
-  if (busy || !loaded || !form.reportValidity()) return;
+  if (busy || !loaded) return;
+  if (!form.checkValidity()) {
+    form.querySelector(':invalid')?.focus();
+    return;
+  }
   const data = new FormData(form);
   const rows = data.getAll('slot').map(slot => ({ slot: Number(slot), submission_id: submissionId, full_name: data.get('full_name').trim(), email: data.get('email').trim(), phone: data.get('phone').trim() }));
   if (!rows.length) return;
   busy = true;
   [...form.elements].forEach(control => { control.disabled = true; });
-  status.textContent = 'Saving your signup…';
+  status.textContent = '';
   let success = false;
   let emailed = false;
   try {
@@ -76,13 +78,13 @@ form.addEventListener('submit', async event => {
       throw new Error(error.code === '23505' ? 'A selected slot is already saved. Check the refreshed names before signing up again.' : 'We could not save your signup. Please try again.');
     }
     success = true;
-    status.textContent = 'Signup saved. Sending notification…';
+    status.textContent = 'Thank you. We will contact you as the Carnival is near.';
     try {
       const notification = await fetch(NOTIFY_URL, { method: 'POST', headers: { apikey: API_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ submission_id: submissionId }) });
       emailed = notification.ok && (await notification.json()).emailed === true;
     } catch { /* Saving remains successful if email sending fails. */ }
   } catch (error) {
-    status.textContent = error.message === 'Failed to fetch' ? 'The connection was interrupted. Check the refreshed names before trying again.' : error.message;
+    console.error('Unable to save signup.', error);
   } finally {
     busy = false;
     [...form.elements].forEach(control => { control.disabled = false; });
