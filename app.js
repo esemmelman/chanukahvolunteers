@@ -89,7 +89,8 @@ form.addEventListener('submit', async event => {
   }
   if (success) {
     form.reset();
-    status.textContent = emailed ? 'Thank you! Your signup has been saved and a confirmation email sent to ' + data.get('email').trim() + '.' : 'Your signup has been saved, but the confirmation emails could not be confirmed. Please let the organizer know; you do not need to sign up again.';
+    status.textContent = 'Thank you. We will contact you as the Carnival is near.';
+    if (!emailed) console.error('Signup saved, but confirmation emails could not be confirmed.');
   }
   await refresh();
 });
