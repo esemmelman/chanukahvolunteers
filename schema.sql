@@ -1,6 +1,6 @@
 -- Dedicated signup table; contact details cannot be read by browser roles.
 create table public.chanukah_carnival_signups (
- slot smallint primary key check (slot between 1 and 21),
+ slot smallint primary key check (slot between 1 and 43),
  submission_id uuid not null,
  full_name text not null check (length(trim(full_name)) between 1 and 120),
  email text not null check (length(email) between 3 and 254 and position('@' in email) > 1),

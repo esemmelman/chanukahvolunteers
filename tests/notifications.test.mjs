@@ -3,8 +3,11 @@ import assert from 'node:assert/strict';
 import { handle as relay, selectedOptions } from '../supabase/functions/chanukah-carnival-email-relay/index.ts';
 import { handle as notify } from '../supabase/functions/chanukah-carnival-notify/index.ts';
 const id = '00000000-0000-4000-8000-000000000001';
+test('booth, table, and breakdown slots are grouped with local numbering', () => {
+  assert.equal(selectedOptions([22, 29, 30, 37, 38, 39, 40, 43]), 'Game Booths  11:00 AM - 12:15 PM\nSelected options: 1, 8\n\nGame Booths  12:15 PM - 1:30 PM\nSelected options: 1, 8\n\nPrizes Table  11:00 AM - 12:15 PM\nSelected options: 1\n\nTickets Table  12:15 PM - 1:30 PM\nSelected options: 1\n\nBreak Down Booths  1:30 PM - 2:30 PM\nSelected options: 1, 4');
+});
 test('new food slots map to the correct heading and local row number', () => {
-  assert.equal(selectedOptions([6, 10, 11, 15, 16, 18, 19, 21]), 'Food Prep 9:00 AM - 11:00 AM\nSelected options: 1, 5\n\nFood Service 11:00 AM - 12:15 PM\nSelected options: 1, 5\n\nFood Service 12:15 PM - 1:30 PM\nSelected options: 1, 3\n\nFood Clean Up 1:30 PM - 2:30 PM\nSelected options: 1, 3');
+  assert.equal(selectedOptions([6, 10, 11, 15, 16, 18, 19, 21]), 'Food Prep  9:00 AM - 11:00 AM\nSelected options: 1, 5\n\nFood Service  11:00 AM - 12:15 PM\nSelected options: 1, 5\n\nFood Service  12:15 PM - 1:30 PM\nSelected options: 1, 3\n\nFood Clean Up  1:30 PM - 2:30 PM\nSelected options: 1, 3');
 });
 const request = (key, body) => new Request('https://example.com', { method: 'POST', headers: { apikey: key, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
 test('relay sends only the organizer and uses a stable idempotency key', async () => {
