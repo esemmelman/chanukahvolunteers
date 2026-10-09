@@ -14,6 +14,8 @@ test('participant email uses singular for one slot and omits option-number lines
 });
 test('new prize and ticket shifts use their own signup lines', () => {
   assert.equal(selectedOptions([44, 45]), 'Prize Table  12:15 PM - 1:30 PM\nSelected options: 1\n\nTickets Table  11:00 AM - 12:15 PM\nSelected options: 1');
+  assert.equal(selectedOptions([45, 46]), 'Tickets Table  11:00 AM - 12:15 PM\nSelected options: 1, 2');
+  assert.match(participantText({ full_name: 'Volunteer', slots: [46] }), /Tickets Table  11:00 AM - 12:15 PM/);
 });
 test('booth, table, and breakdown slots are grouped with local numbering', () => {
   assert.equal(selectedOptions([22, 29, 30, 37, 38, 39, 40, 43]), 'Game Booths  11:00 AM - 12:15 PM\nSelected options: 1, 8\n\nGame Booths  12:15 PM - 1:30 PM\nSelected options: 1, 8\n\nPrize Table  11:00 AM - 12:15 PM\nSelected options: 1\n\nTickets Table  12:15 PM - 1:30 PM\nSelected options: 1\n\nBreak Down Booths  1:30 PM - 2:30 PM\nSelected options: 1, 4');
@@ -47,7 +49,8 @@ test('notification reads saved answers, sends once, and records acceptance', asy
   const response = await notify(request('sb_publishable_JOUqLZDnfGu_yCa6k6FVDQ_AYwpr72i', { submission_id: id, email: 'ignored@example.com' }), key => ({ SUPABASE_SERVICE_ROLE_KEY: 'test', SUPABASE_URL: 'https://database.example.com' })[key], async (url, options) => {
     calls++;
     if (calls === 1) return Response.json([{ slot: 1, full_name: 'Saved name', email: 'saved@example.com', phone: '5551234567', email_notified_at: null }]);
-    if (calls === 2) {
+    if (calls === 2) return Response.json([{ script_url: '', token: 'test' }]);
+    if (calls === 3) {
       const body = JSON.parse(options.body);
       assert.equal(body.email, 'saved@example.com');
       assert.equal(body.full_name, 'Saved name');
@@ -57,7 +60,7 @@ test('notification reads saved answers, sends once, and records acceptance', asy
     assert.ok(JSON.parse(options.body).email_notified_at);
     return new Response(null, { status: 204 });
   });
-  assert.equal(calls, 3);
+  assert.equal(calls, 4);
   assert.deepEqual(await response.json(), { emailed: true });
 });
 test('already notified signup skips sending', async () => {

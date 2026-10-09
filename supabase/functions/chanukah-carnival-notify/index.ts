@@ -1,3 +1,5 @@
+import { sendAppsScript } from './apps-script.ts';
+import { selectedOptions, participantText } from '../chanukah-carnival-email-relay/index.ts';
 const BROWSER_KEY = 'sb_publishable_JOUqLZDnfGu_yCa6k6FVDQ_AYwpr72i';
 const headers = { 'Access-Control-Allow-Origin': 'https://esemmelman.github.io', 'Access-Control-Allow-Headers': 'apikey, content-type', 'Access-Control-Allow-Methods': 'POST, OPTIONS', 'Content-Type': 'application/json' };
 export async function handle(request, env = name => Deno.env.get(name), fetcher = fetch) {
@@ -19,6 +21,23 @@ export async function handle(request, env = name => Deno.env.get(name), fetcher 
     const rows = await response.json();
     if (!rows.length) return reply({ error: 'Signup not found' }, 404);
     if (rows.every(row => row.email_notified_at)) return reply({ emailed: true });
+    const settingsResponse = await fetcher(url + '/rest/v1/chanukah_carnival_email_settings?id=eq.1&select=script_url,token', { headers: dbHeaders });
+    if (!settingsResponse.ok) throw new Error('Cannot read email settings');
+    const settings = (await settingsResponse.json())[0];
+    if (settings?.script_url) {
+      const saved = { ...rows[0], submission_id: input.submission_id, slots: rows.map(row => row.slot) };
+      const failures = [];
+      for (const role of ['organizer', 'participant']) {
+        try {
+          const text = role === 'participant' ? participantText(saved) : `Chanukah Carnival - November 8th\n\nName: ${saved.full_name}\nEmail: ${saved.email}\nCell: ${saved.phone}\n\n${selectedOptions(saved.slots)}`;
+          await sendAppsScript(settings, saved, role, text, fetcher);
+        } catch { failures.push(role); }
+      }
+      if (failures.length) return reply({ error: 'Could not confirm the ' + failures.join(' and ') + ' email' }, 502);
+      const marked = await fetcher(recordUrl, { method: 'PATCH', headers: dbHeaders, body: JSON.stringify({ email_notified_at: new Date().toISOString() }) });
+      if (!marked.ok) throw new Error('Cannot record notification');
+      return reply({ emailed: true });
+    }
     // Recipients and selections come from the saved signup, never the request body.
     const row = rows[0];
     const sent = await fetcher('https://ynfjfanvdvpyycoeweca.supabase.co/functions/v1/chanukah-carnival-email-relay', {

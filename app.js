@@ -78,7 +78,7 @@ form.addEventListener('submit', async event => {
       throw new Error(error.code === '23505' ? 'A selected slot is already saved. Check the refreshed names before signing up again.' : 'We could not save your signup. Please try again.');
     }
     success = true;
-    status.textContent = 'Thank you. We will contact you as the Carnival is near.';
+    status.textContent = 'Thank you. We will contact you close to the Carnival Date.';
     try {
       const notification = await fetch(NOTIFY_URL, { method: 'POST', headers: { apikey: API_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ submission_id: submissionId }) });
       emailed = notification.ok && (await notification.json()).emailed === true;
@@ -91,7 +91,7 @@ form.addEventListener('submit', async event => {
   }
   if (success) {
     form.reset();
-    status.textContent = 'Thank you. We will contact you as the Carnival is near.';
+    status.textContent = 'Thank you. We will contact you close to the Carnival Date.';
     if (!emailed) console.error('Signup saved, but confirmation emails could not be confirmed.');
   }
   await refresh();
