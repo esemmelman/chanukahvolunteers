@@ -89,7 +89,7 @@ form.addEventListener('submit', async event => {
   }
   if (success) {
     form.reset();
-    status.textContent = emailed ? 'Thank you! Your signup has been saved and a notification sent to esemmoc@gmail.com.' : 'Your signup has been saved, but the email notification could not be confirmed. Please let the organizer know; you do not need to sign up again.';
+    status.textContent = emailed ? 'Thank you! Your signup has been saved and a confirmation email sent to ' + data.get('email').trim() + '.' : 'Your signup has been saved, but the confirmation emails could not be confirmed. Please let the organizer know; you do not need to sign up again.';
   }
   await refresh();
 });

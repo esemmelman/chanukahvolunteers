@@ -7,23 +7,30 @@ test('new prize and ticket shifts use their own signup lines', () => {
   assert.equal(selectedOptions([44, 45]), 'Prize Table  12:15 PM - 1:30 PM\nSelected options: 1\n\nTickets Table  11:00 AM - 12:15 PM\nSelected options: 1');
 });
 test('booth, table, and breakdown slots are grouped with local numbering', () => {
-  assert.equal(selectedOptions([22, 29, 30, 37, 38, 39, 40, 43]), 'Game Booths  11:00 AM - 12:15 PM\nSelected options: 1, 8\n\nGame Booths  12:15 PM - 1:30 PM\nSelected options: 1, 8\n\nPrizes Table  11:00 AM - 12:15 PM\nSelected options: 1\n\nTickets Table  12:15 PM - 1:30 PM\nSelected options: 1\n\nBreak Down Booths  1:30 PM - 2:30 PM\nSelected options: 1, 4');
+  assert.equal(selectedOptions([22, 29, 30, 37, 38, 39, 40, 43]), 'Game Booths  11:00 AM - 12:15 PM\nSelected options: 1, 8\n\nGame Booths  12:15 PM - 1:30 PM\nSelected options: 1, 8\n\nPrize Table  11:00 AM - 12:15 PM\nSelected options: 1\n\nTickets Table  12:15 PM - 1:30 PM\nSelected options: 1\n\nBreak Down Booths  1:30 PM - 2:30 PM\nSelected options: 1, 4');
 });
 test('new food slots map to the correct heading and local row number', () => {
   assert.equal(selectedOptions([6, 10, 11, 15, 16, 18, 19, 21]), 'Food Prep  9:00 AM - 11:00 AM\nSelected options: 1, 5\n\nFood Service  11:00 AM - 12:15 PM\nSelected options: 1, 5\n\nFood Service  12:15 PM - 1:30 PM\nSelected options: 1, 3\n\nFood Clean Up  1:30 PM - 2:30 PM\nSelected options: 1, 3');
 });
 const request = (key, body) => new Request('https://example.com', { method: 'POST', headers: { apikey: key, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-test('relay sends only the organizer and uses a stable idempotency key', async () => {
+test('relay sends separate organizer and participant emails with stable keys', async () => {
+  let calls = 0;
   const response = await relay(request('sb_publishable_j7q6Ox0GVsUv68D3oQiOBA_2Avx50il', { submission_id: id, full_name: 'Volunteer', email: 'volunteer@example.com', phone: '5551234567', slots: [1, 3], to: 'someone@example.com' }), key => ({ RESEND_API_KEY: 'test', REMINDER_EMAIL_FROM: 'Sender <sender@example.com>' })[key], async (url, options) => {
     assert.equal(url, 'https://api.resend.com/emails');
     const email = JSON.parse(options.body);
-    assert.deepEqual(email.to, ['esemmoc@gmail.com']);
-    assert.equal(email.reply_to, 'volunteer@example.com');
+    calls++;
+    assert.deepEqual(email.to, [calls === 1 ? 'esemmoc@gmail.com' : 'volunteer@example.com']);
+    assert.equal(email.reply_to, calls === 1 ? 'volunteer@example.com' : 'esemmoc@gmail.com');
     assert.match(email.text, /Selected options: 1, 3/);
-    assert.equal(options.headers['Idempotency-Key'], 'chanukah-carnival/' + id);
+    assert.equal(options.headers['Idempotency-Key'], 'chanukah-carnival/' + id + (calls === 1 ? '' : '/participant'));
+    if (calls === 2) {
+      assert.match(email.text, /Thank you for volunteering/);
+      assert.match(email.text, /Set Up Game Booths  8:00 AM - 10:00 AM/);
+    }
     return Response.json({ id: 'receipt' });
   });
-  assert.deepEqual(await response.json(), { id: 'receipt' });
+  assert.equal(calls, 2);
+  assert.deepEqual(await response.json(), { id: 'receipt', participant_id: 'receipt' });
 });
 test('notification reads saved answers, sends once, and records acceptance', async () => {
   let calls = 0;
@@ -34,7 +41,7 @@ test('notification reads saved answers, sends once, and records acceptance', asy
       const body = JSON.parse(options.body);
       assert.equal(body.email, 'saved@example.com');
       assert.equal(body.full_name, 'Saved name');
-      return Response.json({ id: 'receipt' });
+      return Response.json({ id: 'receipt', participant_id: 'receipt' });
     }
     assert.equal(options.method, 'PATCH');
     assert.ok(JSON.parse(options.body).email_notified_at);

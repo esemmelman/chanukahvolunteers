@@ -6,7 +6,7 @@ export const sections = [
   { title: 'Food Clean Up  1:30 PM - 2:30 PM', start: 19, count: 3 },
   { title: 'Game Booths  11:00 AM - 12:15 PM', start: 22, count: 8 },
   { title: 'Game Booths  12:15 PM - 1:30 PM', start: 30, count: 8 },
-  { title: 'Prizes Table  11:00 AM - 12:15 PM', start: 38, count: 1 },
+  { title: 'Prize Table  11:00 AM - 12:15 PM', start: 38, count: 1 },
   { title: 'Prize Table  12:15 PM - 1:30 PM', start: 44, count: 1 },
   { title: 'Tickets Table  11:00 AM - 12:15 PM', start: 45, count: 1 },
   { title: 'Tickets Table  12:15 PM - 1:30 PM', start: 39, count: 1 },
@@ -31,10 +31,17 @@ export async function handle(request, env = name => Deno.env.get(name), fetcher 
   const sender = (configuredFrom.match(/<([^<>]+)>/)?.[1] || configuredFrom).trim();
   const text = `Chanukah Carnival - November 8th\n\nName: ${row.full_name}\nEmail: ${row.email}\nCell: ${row.phone}\n\n${selectedOptions(row.slots)}`;
   try {
-    const response = await fetcher('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: 'Bearer ' + key, 'Content-Type': 'application/json', 'Idempotency-Key': 'chanukah-carnival/' + row.submission_id }, body: JSON.stringify({ from: 'Chanukah Carnival <' + sender + '>', to: ['esemmoc@gmail.com'], subject: 'Chanukah Carnival - November 8th signup', text, reply_to: row.email }), signal: AbortSignal.timeout(25000) });
-    if (!response.ok) return reply({ error: 'Email rejected' }, 502);
-    const sent = await response.json();
-    return sent.id ? reply({ id: sent.id }) : reply({ error: 'Email not confirmed' }, 502);
+    const receipts = {};
+    for (const [role, recipient] of [['organizer', 'esemmoc@gmail.com'], ['participant', row.email]]) {
+      const participant = role === 'participant';
+      const emailText = participant ? `Chanukah Carnival - November 8th\n\nHello ${row.full_name},\n\nThank you for volunteering! Your signup has been saved. Here are your selections:\n\n${selectedOptions(row.slots)}\n\nWe look forward to seeing you!` : text;
+      const response = await fetcher('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: 'Bearer ' + key, 'Content-Type': 'application/json', 'Idempotency-Key': 'chanukah-carnival/' + row.submission_id + (participant ? '/participant' : '') }, body: JSON.stringify({ from: 'Chanukah Carnival <' + sender + '>', to: [recipient], subject: participant ? 'Your Chanukah Carnival signup - November 8th' : 'Chanukah Carnival - November 8th signup', text: emailText, reply_to: participant ? 'esemmoc@gmail.com' : row.email }), signal: AbortSignal.timeout(12000) });
+      if (!response.ok) return reply({ error: role + ' email rejected' }, 502);
+      const sent = await response.json();
+      if (!sent.id) return reply({ error: role + ' email not confirmed' }, 502);
+      receipts[role] = sent.id;
+    }
+    return reply({ id: receipts.organizer, participant_id: receipts.participant });
   } catch { return reply({ error: 'Email unavailable' }, 502); }
 }
 if (import.meta.main) Deno.serve(request => handle(request));

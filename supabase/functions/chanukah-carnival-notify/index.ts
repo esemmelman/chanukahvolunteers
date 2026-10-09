@@ -19,14 +19,16 @@ export async function handle(request, env = name => Deno.env.get(name), fetcher 
     const rows = await response.json();
     if (!rows.length) return reply({ error: 'Signup not found' }, 404);
     if (rows.every(row => row.email_notified_at)) return reply({ emailed: true });
-    // Only saved database values are passed to the fixed-recipient email relay.
+    // Recipients and selections come from the saved signup, never the request body.
     const row = rows[0];
     const sent = await fetcher('https://ynfjfanvdvpyycoeweca.supabase.co/functions/v1/chanukah-carnival-email-relay', {
       method: 'POST', headers: { apikey: 'sb_publishable_j7q6Ox0GVsUv68D3oQiOBA_2Avx50il', 'Content-Type': 'application/json' },
       body: JSON.stringify({ submission_id: input.submission_id, full_name: row.full_name, email: row.email, phone: row.phone, slots: rows.map(row => row.slot) }),
       signal: AbortSignal.timeout(30000)
     });
-    if (!sent.ok || !(await sent.json()).id) return reply({ error: 'Email was not confirmed' }, 502);
+    if (!sent.ok) return reply({ error: 'Emails were not confirmed' }, 502);
+    const receipts = await sent.json();
+    if (!receipts.id || !receipts.participant_id) return reply({ error: 'Emails were not confirmed' }, 502);
     const marked = await fetcher(recordUrl, { method: 'PATCH', headers: dbHeaders, body: JSON.stringify({ email_notified_at: new Date().toISOString() }) });
     if (!marked.ok) console.error('Carnival notification sent; receipt update failed');
     return reply({ emailed: true });
