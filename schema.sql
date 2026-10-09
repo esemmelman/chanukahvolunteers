@@ -5,7 +5,8 @@ create table public.chanukah_carnival_signups (
  full_name text not null check (length(trim(full_name)) between 1 and 120),
  email text not null check (length(email) between 3 and 254 and position('@' in email) > 1),
  phone text not null check (length(phone) <= 40 and length(regexp_replace(phone, '[^0-9]', '', 'g')) between 10 and 15),
- created_at timestamptz not null default now()
+ created_at timestamptz not null default now(),
+ email_notified_at timestamptz
 );
 alter table public.chanukah_carnival_signups enable row level security;
 revoke all on public.chanukah_carnival_signups from public, anon, authenticated;

@@ -1,5 +1,6 @@
 'use strict';
 const API_URL = 'https://fgomaujsdblpzxhnnqrg.supabase.co/rest/v1/chanukah_carnival_signups';
+const NOTIFY_URL = 'https://fgomaujsdblpzxhnnqrg.supabase.co/functions/v1/chanukah-carnival-notify';
 // Public browser key. Contact details are protected by database column grants.
 const API_KEY = 'sb_publishable_JOUqLZDnfGu_yCa6k6FVDQ_AYwpr72i';
 const form = document.getElementById('signup');
@@ -67,6 +68,7 @@ form.addEventListener('submit', async event => {
   [...form.elements].forEach(control => { control.disabled = true; });
   status.textContent = 'Saving your signup…';
   let success = false;
+  let emailed = false;
   try {
     const response = await fetch(API_URL, { method: 'POST', headers: { apikey: API_KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body: JSON.stringify(rows) });
     if (!response.ok) {
@@ -74,6 +76,11 @@ form.addEventListener('submit', async event => {
       throw new Error(error.code === '23505' ? 'A selected slot is already saved. Check the refreshed names before signing up again.' : 'We could not save your signup. Please try again.');
     }
     success = true;
+    status.textContent = 'Signup saved. Sending notification…';
+    try {
+      const notification = await fetch(NOTIFY_URL, { method: 'POST', headers: { apikey: API_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ submission_id: submissionId }) });
+      emailed = notification.ok && (await notification.json()).emailed === true;
+    } catch { /* Saving remains successful if email sending fails. */ }
   } catch (error) {
     status.textContent = error.message === 'Failed to fetch' ? 'The connection was interrupted. Check the refreshed names before trying again.' : error.message;
   } finally {
@@ -82,7 +89,7 @@ form.addEventListener('submit', async event => {
   }
   if (success) {
     form.reset();
-    status.textContent = 'Thank you! Your setup signup has been saved.';
+    status.textContent = emailed ? 'Thank you! Your signup has been saved and a notification sent to esemmoc@gmail.com.' : 'Your signup has been saved, but the email notification could not be confirmed. Please let the organizer know; you do not need to sign up again.';
   }
   await refresh();
 });

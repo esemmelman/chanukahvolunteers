@@ -1,4 +1,4 @@
-# Chanukah Carnival - November 8
+# Chanukah Carnival - November 8th
 
 Volunteer signup form patterned after the Mealtrain app. Name, Email, and Cell appear above five numbered setup slots for 8:00–10:00 AM. Selecting a checkbox previews your name on its underline. Submit saves the selected slots; Cancel clears unsaved entries. Filled slots show saved names and cannot be selected. Names refresh every 15 seconds.
 
@@ -10,4 +10,4 @@ Uses the existing Supabase bnaimitzvah project with a dedicated `public.chanukah
 
 The browser key in app.js is intentionally publishable. Never add service-role keys or credentials to the frontend.
 
-This first version includes only the requested setup section. No email notifications are configured.
+Submit saves the signup first, then sends one notification to esemmoc@gmail.com through dedicated Supabase Edge Functions. No participant or coordinator email is sent. The notification includes name, email, cell, and selected setup slots. The DayFlow email relay uses its existing Resend credentials, a fixed recipient, and a submission-specific idempotency key. Email acceptance is recorded in email_notified_at. An email failure preserves the signup and displays a separate warning.
