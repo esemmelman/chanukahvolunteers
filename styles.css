@@ -8,7 +8,7 @@ h2 { font-size: 18px; letter-spacing: .12em; margin: 0; color: #60735c; }
 .line-field { display: flex; align-items: baseline; gap: 12px; margin-bottom: 28px; font-size: 17px; line-height: 1.6; }
 .line-field span { width: 76px; flex-shrink: 0; }
 b { color: #a34137; font-weight: normal; }
-.options-note { font-size: 17px; line-height: 1.6; margin: 56px 0 0; text-align: center; font-weight: bold; text-decoration: underline; }
+.options-note { font-size: 20px; line-height: 1.6; margin: 56px 0 0; text-align: center; font-weight: bold; text-decoration: underline; }
 .line-field input { flex: 1; min-width: 0; font: inherit; padding: 0 6px 3px; color: inherit; border: 0; border-bottom: 1px solid #687461; border-radius: 0; background: transparent; }
 fieldset { border: 0; padding: 0; margin: 60px 0 30px; min-width: 0; }
 legend { font-size: 20px; font-weight: 600; line-height: 1.5; white-space: pre-wrap; }
