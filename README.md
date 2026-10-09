@@ -1,6 +1,6 @@
 # Chanukah Carnival - November 8th
 
-Volunteer signup form patterned after the Mealtrain app. Name, Email, and Cell appear above 43 numbered slots across Set Up Game Booths (5), Food Prep (5), Food Service 11:00 AM (5), Food Service 12:15 PM (3), Food Clean Up (3), Game Booths 11:00 AM (8), Game Booths 12:15 PM (8), Prizes Table (1), Tickets Table (1), and Break Down Booths (4). Selecting a checkbox previews your name on its underline. Submit saves the selected slots; Cancel clears unsaved entries. Filled slots show saved names and cannot be selected. Names refresh every 15 seconds.
+Volunteer signup form patterned after the Mealtrain app. Name, Email, and Cell appear above 45 numbered slots across Set Up Game Booths (5), Food Prep (5), Food Service 11:00 AM (5), Food Service 12:15 PM (3), Food Clean Up (3), Game Booths 11:00 AM (8), Game Booths 12:15 PM (8), Prizes Table 11:00 AM (1), Prize Table 12:15 PM (1), Tickets Table 11:00 AM (1), Tickets Table 12:15 PM (1), and Break Down Booths (4). Selecting a checkbox previews your name on its underline. Submit saves the selected slots; Cancel clears unsaved entries. Filled slots show saved names and cannot be selected. Names refresh every 15 seconds.
 
 Serve this directory with any static web server or GitHub Pages; no build or dependencies are required.
 

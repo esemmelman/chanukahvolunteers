@@ -15,7 +15,7 @@ legend { font-size: 20px; font-weight: 600; line-height: 1.5; white-space: pre-w
 .slots { margin-top: 30px; }
 .slot-row { display: grid; grid-template-columns: 20px 24px minmax(0, 1fr); align-items: center; gap: 12px; margin-bottom: 16px; font-size: 18px; cursor: pointer; }
 .slot-row input { width: 18px; height: 18px; margin: 0; accent-color: #526c46; }
-.name-line { min-height: 28px; border-bottom: 1px solid #687461; padding: 0 6px 4px; overflow-wrap: anywhere; }
+.name-line { display: flex; align-items: flex-end; min-height: 28px; border-bottom: 1px solid #687461; padding: 0 6px 1px; line-height: 1.15; overflow-wrap: anywhere; }
 .filled { color: #777; cursor: default; }
 .pending { color: #60735c; font-style: italic; }
 .actions { display: flex; gap: 16px; margin-top: 28px; }

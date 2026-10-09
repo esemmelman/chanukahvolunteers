@@ -3,6 +3,9 @@ import assert from 'node:assert/strict';
 import { handle as relay, selectedOptions } from '../supabase/functions/chanukah-carnival-email-relay/index.ts';
 import { handle as notify } from '../supabase/functions/chanukah-carnival-notify/index.ts';
 const id = '00000000-0000-4000-8000-000000000001';
+test('new prize and ticket shifts use their own signup lines', () => {
+  assert.equal(selectedOptions([44, 45]), 'Prize Table  12:15 PM - 1:30 PM\nSelected options: 1\n\nTickets Table  11:00 AM - 12:15 PM\nSelected options: 1');
+});
 test('booth, table, and breakdown slots are grouped with local numbering', () => {
   assert.equal(selectedOptions([22, 29, 30, 37, 38, 39, 40, 43]), 'Game Booths  11:00 AM - 12:15 PM\nSelected options: 1, 8\n\nGame Booths  12:15 PM - 1:30 PM\nSelected options: 1, 8\n\nPrizes Table  11:00 AM - 12:15 PM\nSelected options: 1\n\nTickets Table  12:15 PM - 1:30 PM\nSelected options: 1\n\nBreak Down Booths  1:30 PM - 2:30 PM\nSelected options: 1, 4');
 });

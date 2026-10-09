@@ -7,6 +7,8 @@ export const sections = [
   { title: 'Game Booths  11:00 AM - 12:15 PM', start: 22, count: 8 },
   { title: 'Game Booths  12:15 PM - 1:30 PM', start: 30, count: 8 },
   { title: 'Prizes Table  11:00 AM - 12:15 PM', start: 38, count: 1 },
+  { title: 'Prize Table  12:15 PM - 1:30 PM', start: 44, count: 1 },
+  { title: 'Tickets Table  11:00 AM - 12:15 PM', start: 45, count: 1 },
   { title: 'Tickets Table  12:15 PM - 1:30 PM', start: 39, count: 1 },
   { title: 'Break Down Booths  1:30 PM - 2:30 PM', start: 40, count: 4 }
 ];
@@ -22,7 +24,7 @@ export async function handle(request, env = name => Deno.env.get(name), fetcher 
   if (request.headers.get('apikey') !== 'sb_publishable_j7q6Ox0GVsUv68D3oQiOBA_2Avx50il') return reply({ error: 'Invalid API key' }, 401);
   let row;
   try { row = await request.json(); } catch { return reply({ error: 'Invalid request' }, 400); }
-  if (!/^[0-9a-f-]{36}$/i.test(row?.submission_id || '') || typeof row.full_name !== 'string' || row.full_name.length > 120 || typeof row.email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(row.email) || row.email.length > 254 || typeof row.phone !== 'string' || row.phone.length > 40 || !Array.isArray(row.slots) || !row.slots.length || row.slots.length > 43 || row.slots.some(slot => !Number.isInteger(slot) || slot < 1 || slot > 43)) return reply({ error: 'Invalid notification' }, 400);
+  if (!/^[0-9a-f-]{36}$/i.test(row?.submission_id || '') || typeof row.full_name !== 'string' || row.full_name.length > 120 || typeof row.email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(row.email) || row.email.length > 254 || typeof row.phone !== 'string' || row.phone.length > 40 || !Array.isArray(row.slots) || !row.slots.length || row.slots.length > 45 || row.slots.some(slot => !Number.isInteger(slot) || slot < 1 || slot > 45)) return reply({ error: 'Invalid notification' }, 400);
   const key = env('RESEND_API_KEY');
   const configuredFrom = env('REMINDER_EMAIL_FROM');
   if (!key || !configuredFrom) return reply({ error: 'Email unavailable' }, 503);
