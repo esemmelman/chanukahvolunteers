@@ -1,8 +1,17 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { handle as relay, selectedOptions } from '../supabase/functions/chanukah-carnival-email-relay/index.ts';
+import { handle as relay, selectedOptions, participantText } from '../supabase/functions/chanukah-carnival-email-relay/index.ts';
 import { handle as notify } from '../supabase/functions/chanukah-carnival-notify/index.ts';
 const id = '00000000-0000-4000-8000-000000000001';
+test('participant email uses singular for one slot and omits option-number lines', () => {
+  const text = participantText({ full_name: 'Volunteer', slots: [44] });
+  assert.match(text, /Here is your selection\./);
+  assert.match(text, /Prize Table  12:15 PM - 1:30 PM/);
+  assert.doesNotMatch(text, /Selected options:|Here are your selections/);
+  const multiple = participantText({ full_name: 'Volunteer', slots: [38, 44] });
+  assert.match(multiple, /Here are your selections:/);
+  assert.doesNotMatch(multiple, /Selected options:/);
+});
 test('new prize and ticket shifts use their own signup lines', () => {
   assert.equal(selectedOptions([44, 45]), 'Prize Table  12:15 PM - 1:30 PM\nSelected options: 1\n\nTickets Table  11:00 AM - 12:15 PM\nSelected options: 1');
 });
@@ -21,7 +30,8 @@ test('relay sends separate organizer and participant emails with stable keys', a
     calls++;
     assert.deepEqual(email.to, [calls === 1 ? 'esemmoc@gmail.com' : 'volunteer@example.com']);
     assert.equal(email.reply_to, calls === 1 ? 'volunteer@example.com' : 'esemmoc@gmail.com');
-    assert.match(email.text, /Selected options: 1, 3/);
+    if (calls === 1) assert.match(email.text, /Selected options: 1, 3/);
+    else assert.doesNotMatch(email.text, /Selected options:/);
     assert.equal(options.headers['Idempotency-Key'], 'chanukah-carnival/' + id + (calls === 1 ? '' : '/participant'));
     if (calls === 2) {
       assert.match(email.text, /Thank you for volunteering/);

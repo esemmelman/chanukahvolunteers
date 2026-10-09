@@ -18,6 +18,11 @@ export function selectedOptions(slots) {
     return selected.length ? `${section.title}\nSelected options: ${selected.join(', ')}` : '';
   }).filter(Boolean).join('\n\n');
 }
+export function participantText(row) {
+  const selections = sections.filter(section => row.slots.some(slot => slot >= section.start && slot < section.start + section.count)).map(section => section.title).join('\n\n');
+  const introduction = row.slots.length === 1 ? 'Here is your selection.' : 'Here are your selections:';
+  return `Chanukah Carnival - November 8th\n\nHello ${row.full_name},\n\nThank you for volunteering! Your signup has been saved. ${introduction}\n\n${selections}\n\nWe look forward to seeing you!`;
+}
 export async function handle(request, env = name => Deno.env.get(name), fetcher = fetch) {
   const reply = (body, status = 200) => Response.json(body, { status });
   if (request.method !== 'POST') return reply({ error: 'Method not allowed' }, 405);
@@ -34,7 +39,7 @@ export async function handle(request, env = name => Deno.env.get(name), fetcher 
     const receipts = {};
     for (const [role, recipient] of [['organizer', 'esemmoc@gmail.com'], ['participant', row.email]]) {
       const participant = role === 'participant';
-      const emailText = participant ? `Chanukah Carnival - November 8th\n\nHello ${row.full_name},\n\nThank you for volunteering! Your signup has been saved. Here are your selections:\n\n${selectedOptions(row.slots)}\n\nWe look forward to seeing you!` : text;
+      const emailText = participant ? participantText(row) : text;
       const response = await fetcher('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: 'Bearer ' + key, 'Content-Type': 'application/json', 'Idempotency-Key': 'chanukah-carnival/' + row.submission_id + (participant ? '/participant' : '') }, body: JSON.stringify({ from: 'Chanukah Carnival <' + sender + '>', to: [recipient], subject: participant ? 'Your Chanukah Carnival signup - November 8th' : 'Chanukah Carnival - November 8th signup', text: emailText, reply_to: participant ? 'esemmoc@gmail.com' : row.email }), signal: AbortSignal.timeout(12000) });
       if (!response.ok) return reply({ error: role + ' email rejected' }, 502);
       const sent = await response.json();
