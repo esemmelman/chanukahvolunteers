@@ -25,7 +25,7 @@ function render() {
     line.textContent = row ? row.full_name : box.checked ? nameInput.value.trim() : '';
     line.classList.toggle('pending', !row && box.checked);
   });
-  submitButton.disabled = busy || !loaded || saved.length === 5;
+  submitButton.disabled = busy || !loaded || boxes.every(box => saved.some(row => row.slot === Number(box.value)));
   validate();
 }
 function validate() {
@@ -34,7 +34,7 @@ function validate() {
   phoneInput.setCustomValidity(digits >= 10 && digits <= 15 ? '' : 'Please enter your cell number including area code.');
   boxes.forEach(box => box.setCustomValidity(''));
   const available = boxes.find(box => !box.disabled);
-  if (available) available.setCustomValidity(boxes.some(box => box.checked && !box.disabled) ? '' : 'Please select a setup slot.');
+  if (available) available.setCustomValidity(boxes.some(box => box.checked && !box.disabled) ? '' : 'Please select one or more options.');
 }
 async function refresh() {
   if (refreshing || busy) return;
@@ -44,7 +44,7 @@ async function refresh() {
     if (!response.ok) throw new Error('Load failed');
     saved = await response.json();
     loaded = true;
-    loadStatus.textContent = saved.length === 5 ? 'All five setup slots are filled. Thank you!' : '';
+    loadStatus.textContent = boxes.every(box => saved.some(row => row.slot === Number(box.value))) ? 'All volunteer slots are filled. Thank you!' : '';
   } catch {
     loadStatus.textContent = 'Unable to refresh saved names. Retrying shortly.';
   } finally { refreshing = false; render(); }
