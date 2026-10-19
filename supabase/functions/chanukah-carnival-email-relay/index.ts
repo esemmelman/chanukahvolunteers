@@ -26,7 +26,7 @@ export function participantText(row) {
 export async function handle(request, env = name => Deno.env.get(name), fetcher = fetch) {
   const reply = (body, status = 200) => Response.json(body, { status });
   if (request.method !== 'POST') return reply({ error: 'Method not allowed' }, 405);
-  if (request.headers.get('apikey') !== 'sb_publishable_j7q6Ox0GVsUv68D3oQiOBA_2Avx50il') return reply({ error: 'Invalid API key' }, 401);
+  if (request.headers.get('apikey') !== 'sb_publishable_JOUqLZDnfGu_yCa6k6FVDQ_AYwpr72i') return reply({ error: 'Invalid API key' }, 401);
   let row;
   try { row = await request.json(); } catch { return reply({ error: 'Invalid request' }, 400); }
   if (!/^[0-9a-f-]{36}$/i.test(row?.submission_id || '') || typeof row.full_name !== 'string' || row.full_name.length > 120 || typeof row.email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(row.email) || row.email.length > 254 || typeof row.phone !== 'string' || row.phone.length > 40 || !Array.isArray(row.slots) || !row.slots.length || row.slots.length > 46 || row.slots.some(slot => !Number.isInteger(slot) || slot < 1 || slot > 46)) return reply({ error: 'Invalid notification' }, 400);

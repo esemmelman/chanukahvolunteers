@@ -26,7 +26,7 @@ test('new food slots map to the correct heading and local row number', () => {
 const request = (key, body) => new Request('https://example.com', { method: 'POST', headers: { apikey: key, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
 test('relay sends separate organizer and participant emails with stable keys', async () => {
   let calls = 0;
-  const response = await relay(request('sb_publishable_j7q6Ox0GVsUv68D3oQiOBA_2Avx50il', { submission_id: id, full_name: 'Volunteer', email: 'volunteer@example.com', phone: '5551234567', slots: [1, 3], to: 'someone@example.com' }), key => ({ RESEND_API_KEY: 'test', REMINDER_EMAIL_FROM: 'Sender <sender@example.com>' })[key], async (url, options) => {
+  const response = await relay(request('sb_publishable_JOUqLZDnfGu_yCa6k6FVDQ_AYwpr72i', { submission_id: id, full_name: 'Volunteer', email: 'volunteer@example.com', phone: '5551234567', slots: [1, 3], to: 'someone@example.com' }), key => ({ RESEND_API_KEY: 'test', REMINDER_EMAIL_FROM: 'Sender <sender@example.com>' })[key], async (url, options) => {
     assert.equal(url, 'https://api.resend.com/emails');
     const email = JSON.parse(options.body);
     calls++;

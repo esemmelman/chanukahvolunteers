@@ -40,8 +40,8 @@ export async function handle(request, env = name => Deno.env.get(name), fetcher 
     }
     // Recipients and selections come from the saved signup, never the request body.
     const row = rows[0];
-    const sent = await fetcher('https://ynfjfanvdvpyycoeweca.supabase.co/functions/v1/chanukah-carnival-email-relay', {
-      method: 'POST', headers: { apikey: 'sb_publishable_j7q6Ox0GVsUv68D3oQiOBA_2Avx50il', 'Content-Type': 'application/json' },
+    const sent = await fetcher('https://fgomaujsdblpzxhnnqrg.supabase.co/functions/v1/chanukah-carnival-email-relay', {
+      method: 'POST', headers: { apikey: 'sb_publishable_JOUqLZDnfGu_yCa6k6FVDQ_AYwpr72i', 'Content-Type': 'application/json' },
       body: JSON.stringify({ submission_id: input.submission_id, full_name: row.full_name, email: row.email, phone: row.phone, slots: rows.map(row => row.slot) }),
       signal: AbortSignal.timeout(30000)
     });
