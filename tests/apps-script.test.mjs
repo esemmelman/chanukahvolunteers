@@ -40,10 +40,11 @@ test('notification attempts both recipients independently using saved answers', 
         roles.push(body.role);
         assert.equal(body.email, 'saved@example.com');
         assert.equal(body.id, id);
+        assert.match(body.text, /Bowling Pins/);
         return Response.json(body.role === 'organizer' ? { ok: false } : { ok: true, id: 'chanukah-' + id + '-participant' });
       }
       if (options.method === 'PATCH') { marked = true; return new Response(null, { status: 204 }); }
-      return Response.json([{ slot: 44, full_name: 'Saved name', email: 'saved@example.com', phone: '5551234567' }]);
+      return Response.json([{ slot: 24, full_name: 'Saved name', email: 'saved@example.com', phone: '5551234567' }]);
     });
   assert.deepEqual(roles, ['organizer', 'participant']);
   assert.equal(response.status, 502);

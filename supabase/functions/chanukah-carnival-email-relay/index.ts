@@ -1,11 +1,12 @@
+const boothNames = ['Football Toss', 'Bounce House', 'Bowling Pins', 'Bean Bag/Ring/Latke Toss', 'Dreidel Spin', 'Basketball Hoops', 'Other', 'Retired booth'];
 export const sections = [
   { title: 'Set Up Game Booths  8:00 AM - 10:00 AM', start: 1, count: 5 },
   { title: 'Food Prep  9:00 AM - 11:00 AM', start: 6, count: 5 },
   { title: 'Food Service  11:00 AM - 12:15 PM', start: 11, count: 5 },
   { title: 'Food Service  12:15 PM - 1:30 PM', start: 16, count: 3 },
   { title: 'Food Clean Up  1:30 PM - 2:30 PM', start: 19, count: 3 },
-  { title: 'Game Booths  11:00 AM - 12:15 PM', start: 22, count: 8 },
-  { title: 'Game Booths  12:15 PM - 1:30 PM', start: 30, count: 8 },
+  { title: 'Game Booths  11:00 AM - 12:15 PM', start: 22, count: 8, options: boothNames },
+  { title: 'Game Booths  12:15 PM - 1:30 PM', start: 30, count: 8, options: boothNames },
   { title: 'Prize Table  11:00 AM - 12:15 PM', start: 38, count: 1 },
   { title: 'Prize Table  12:15 PM - 1:30 PM', start: 44, count: 1 },
   { title: 'Tickets Table  11:00 AM - 12:15 PM', start: 45, count: 2 },
@@ -14,12 +15,16 @@ export const sections = [
 ];
 export function selectedOptions(slots) {
   return sections.map(section => {
-    const selected = slots.filter(slot => slot >= section.start && slot < section.start + section.count).map(slot => slot - section.start + 1);
+    const selected = slots.filter(slot => slot >= section.start && slot < section.start + section.count).map(slot => section.options ? section.options[slot - section.start] : slot - section.start + 1);
     return selected.length ? `${section.title}\nSelected options: ${selected.join(', ')}` : '';
   }).filter(Boolean).join('\n\n');
 }
 export function participantText(row) {
-  const selections = sections.filter(section => row.slots.some(slot => slot >= section.start && slot < section.start + section.count)).map(section => section.title).join('\n\n');
+  const selections = sections.map(section => {
+    const selected = row.slots.filter(slot => slot >= section.start && slot < section.start + section.count);
+    if (!selected.length) return '';
+    return section.title + (section.options ? '\n' + selected.map(slot => section.options[slot - section.start]).join(', ') : '');
+  }).filter(Boolean).join('\n\n');
   const introduction = row.slots.length === 1 ? 'Here is your selection.' : 'Here are your selections:';
   return `Chanukah Carnival - November 8th\n\nHello ${row.full_name},\n\nThank you for volunteering! Your signup has been saved. ${introduction}\n\n${selections}\n\nWe look forward to seeing you!`;
 }

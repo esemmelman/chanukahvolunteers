@@ -18,7 +18,7 @@ test('new prize and ticket shifts use their own signup lines', () => {
   assert.match(participantText({ full_name: 'Volunteer', slots: [46] }), /Tickets Table  11:00 AM - 12:15 PM/);
 });
 test('booth, table, and breakdown slots are grouped with local numbering', () => {
-  assert.equal(selectedOptions([22, 29, 30, 37, 38, 39, 40, 43]), 'Game Booths  11:00 AM - 12:15 PM\nSelected options: 1, 8\n\nGame Booths  12:15 PM - 1:30 PM\nSelected options: 1, 8\n\nPrize Table  11:00 AM - 12:15 PM\nSelected options: 1\n\nTickets Table  12:15 PM - 1:30 PM\nSelected options: 1\n\nBreak Down Booths  1:30 PM - 2:30 PM\nSelected options: 1, 4');
+  assert.equal(selectedOptions([22, 29, 30, 37, 38, 39, 40, 43]), 'Game Booths  11:00 AM - 12:15 PM\nSelected options: Football Toss, Retired booth\n\nGame Booths  12:15 PM - 1:30 PM\nSelected options: Football Toss, Retired booth\n\nPrize Table  11:00 AM - 12:15 PM\nSelected options: 1\n\nTickets Table  12:15 PM - 1:30 PM\nSelected options: 1\n\nBreak Down Booths  1:30 PM - 2:30 PM\nSelected options: 1, 4');
 });
 test('new food slots map to the correct heading and local row number', () => {
   assert.equal(selectedOptions([6, 10, 11, 15, 16, 18, 19, 21]), 'Food Prep  9:00 AM - 11:00 AM\nSelected options: 1, 5\n\nFood Service  11:00 AM - 12:15 PM\nSelected options: 1, 5\n\nFood Service  12:15 PM - 1:30 PM\nSelected options: 1, 3\n\nFood Clean Up  1:30 PM - 2:30 PM\nSelected options: 1, 3');
@@ -71,4 +71,15 @@ test('already notified signup skips sending', async () => {
   });
   assert.equal(calls, 1);
   assert.deepEqual(await response.json(), { emailed: true });
+});
+
+test('every active booth uses its form label in organizer and participant emails', () => {
+  const labels = ['Football Toss', 'Bounce House', 'Bowling Pins', 'Bean Bag/Ring/Latke Toss', 'Dreidel Spin', 'Basketball Hoops', 'Other'];
+  for (const start of [22, 30]) {
+    for (const [index, label] of labels.entries()) {
+      const slots = [start + index];
+      assert.ok(selectedOptions(slots).includes('Selected options: ' + label));
+      assert.ok(participantText({ full_name: 'Volunteer', slots }).includes('\n' + label));
+    }
+  }
 });
