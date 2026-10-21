@@ -30,5 +30,5 @@ button:focus-visible, input:focus-visible { outline: 3px solid #a8bf94; outline-
 @media (max-width: 540px) { body { padding: 16px 10px; } main { padding: 26px 20px; } legend { font-size: 18px; } }
 @media print { body { padding: 0; background: white; } main { border: 0; box-shadow: none; background: white; } .actions, #load-status, #status { display: none; } }
 
-.booth-row { grid-template-columns: 20px minmax(0, 240px) minmax(0, 1fr); }
+.booth-row { grid-template-columns: 20px minmax(0, 210px) minmax(0, 1fr); }
 @media (max-width: 540px) { .booth-row { grid-template-columns: 20px minmax(0, 1fr); } .booth-row .name-line { grid-column: 2; } }
