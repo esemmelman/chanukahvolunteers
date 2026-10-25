@@ -27,7 +27,7 @@ function showSelectionBubble(box) {
   selectionBubble = document.createElement('span');
   selectionBubble.className = 'selection-bubble';
   selectionBubble.setAttribute('role', 'alert');
-  selectionBubble.textContent = 'Please provide your name, email, and cell phone above';
+  selectionBubble.textContent = 'Please provide your name, email, and cell phone, above';
   box.closest('label').append(selectionBubble);
   selectionBubbleTimer = setTimeout(clearSelectionBubble, 4000);
 }
