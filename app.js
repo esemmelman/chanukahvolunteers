@@ -5,6 +5,7 @@ const NOTIFY_URL = 'https://fgomaujsdblpzxhnnqrg.supabase.co/functions/v1/chanuk
 const API_KEY = 'sb_publishable_JOUqLZDnfGu_yCa6k6FVDQ_AYwpr72i';
 const form = document.getElementById('signup');
 const nameInput = document.getElementById('full-name');
+const emailInput = document.getElementById('email');
 const phoneInput = document.getElementById('phone');
 const boxes = [...form.querySelectorAll('[name="slot"]')];
 const status = document.getElementById('status');
@@ -48,7 +49,13 @@ async function refresh() {
   } finally { refreshing = false; render(); }
 }
 form.addEventListener('input', render);
-form.addEventListener('change', render);
+form.addEventListener('change', event => {
+  if (boxes.includes(event.target) && event.target.checked &&
+      [nameInput, emailInput, phoneInput].some(input => !input.value.trim())) {
+    alert('Please provide your name, email, anc cell phone above');
+  }
+  render();
+});
 form.addEventListener('reset', event => {
   if (busy) { event.preventDefault(); return; }
   submissionId = crypto.randomUUID();
