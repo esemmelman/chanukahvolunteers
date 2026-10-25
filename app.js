@@ -15,6 +15,22 @@ let busy = false;
 let loaded = false;
 let refreshing = false;
 let submissionId = crypto.randomUUID();
+let selectionBubble;
+let selectionBubbleTimer;
+function clearSelectionBubble() {
+  clearTimeout(selectionBubbleTimer);
+  selectionBubble?.remove();
+  selectionBubble = null;
+}
+function showSelectionBubble(box) {
+  clearSelectionBubble();
+  selectionBubble = document.createElement('span');
+  selectionBubble.className = 'selection-bubble';
+  selectionBubble.setAttribute('role', 'alert');
+  selectionBubble.textContent = 'Please provide your name, email, anc cell phone above';
+  box.closest('label').append(selectionBubble);
+  selectionBubbleTimer = setTimeout(clearSelectionBubble, 3000);
+}
 function render() {
   boxes.forEach(box => {
     const row = saved.find(row => row.slot === Number(box.value));
@@ -52,12 +68,14 @@ form.addEventListener('input', render);
 form.addEventListener('change', event => {
   if (boxes.includes(event.target) && event.target.checked &&
       [nameInput, emailInput, phoneInput].some(input => !input.value.trim())) {
-    alert('Please provide your name, email, anc cell phone above');
+    event.target.checked = false;
+    showSelectionBubble(event.target);
   }
   render();
 });
 form.addEventListener('reset', event => {
   if (busy) { event.preventDefault(); return; }
+  clearSelectionBubble();
   submissionId = crypto.randomUUID();
   status.textContent = '';
   setTimeout(render, 0);

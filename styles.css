@@ -19,6 +19,10 @@ legend { font-size: 20px; font-weight: 600; line-height: 1.5; white-space: pre-w
 .name-line { display: flex; align-items: flex-end; min-height: 28px; border-bottom: 1px solid #687461; padding: 0 6px 1px; line-height: 1.15; overflow-wrap: anywhere; }
 .filled { color: #777; cursor: default; }
 .pending { color: #60735c; font-style: italic; }
+.slot-row { position: relative; }
+.selection-bubble { position: absolute; right: calc(100% + 12px); top: 50%; transform: translateY(-50%); width: 240px; padding: 12px 14px; background: #29382e; color: white; border-radius: 8px; box-shadow: 0 3px 12px #0003; font-size: 14px; line-height: 1.4; cursor: default; pointer-events: none; z-index: 10; }
+.selection-bubble::after { content: ''; position: absolute; left: 100%; top: calc(50% - 7px); border: 7px solid transparent; border-left-color: #29382e; }
+@media (max-width: 1380px) { .selection-bubble { right: auto; left: 0; top: auto; bottom: calc(100% + 12px); transform: none; max-width: calc(100vw - 80px); } .selection-bubble::after { left: 3px; top: 100%; border-left-color: transparent; border-top-color: #29382e; } }
 .actions { display: flex; gap: 16px; margin-top: 28px; }
 button { background: #526c46; color: white; border: 1px solid #526c46; border-radius: 6px; font: inherit; padding: 12px 26px; cursor: pointer; }
 button.secondary { background: white; color: #526c46; }
