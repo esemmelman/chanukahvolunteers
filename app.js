@@ -8,6 +8,8 @@ const nameInput = document.getElementById('full-name');
 const emailInput = document.getElementById('email');
 const phoneInput = document.getElementById('phone');
 const boxes = [...form.querySelectorAll('[name="slot"]')];
+const openOnly = document.getElementById('open-only');
+const sections = [...form.querySelectorAll('fieldset')];
 const status = document.getElementById('status');
 const submitButton = form.querySelector('[type="submit"]');
 let saved = [];
@@ -37,9 +39,13 @@ function render() {
     box.disabled = busy || !loaded || Boolean(row);
     if (row) box.checked = false;
     box.closest('label').classList.toggle('filled', Boolean(row));
+    box.closest('label').hidden = openOnly.checked && Boolean(row);
     const line = document.querySelector(`[data-slot="${box.value}"]`);
     line.textContent = row ? row.full_name : box.checked ? nameInput.value.trim() : '';
     line.classList.toggle('pending', !row && box.checked);
+  });
+  sections.forEach(section => {
+    section.hidden = openOnly.checked && [...section.querySelectorAll('.slot-row')].every(row => row.hidden);
   });
   submitButton.disabled = busy || !loaded || boxes.every(box => saved.some(row => row.slot === Number(box.value)));
   validate();
@@ -65,6 +71,7 @@ async function refresh() {
   } finally { refreshing = false; render(); }
 }
 form.addEventListener('input', render);
+openOnly.addEventListener('change', render);
 form.addEventListener('change', event => {
   if (boxes.includes(event.target) && event.target.checked &&
       [nameInput, emailInput, phoneInput].some(input => !input.value.trim())) {

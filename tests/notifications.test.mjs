@@ -3,6 +3,14 @@ import assert from 'node:assert/strict';
 import { handle as relay, selectedOptions, participantText } from '../supabase/functions/chanukah-carnival-email-relay/index.ts';
 import { handle as notify } from '../supabase/functions/chanukah-carnival-notify/index.ts';
 const id = '00000000-0000-4000-8000-000000000001';
+
+test('additional food slots retain their section and local number in emails', () => {
+  assert.equal(selectedOptions([16, 47, 19, 48]), 'Food Service  12:15 PM - 1:30 PM\nSelected options: 1, 4\n\nFood Clean Up  1:30 PM - 2:30 PM\nSelected options: 1, 4');
+  const text = participantText({ full_name: 'Volunteer', slots: [47, 48] });
+  assert.match(text, /Food Service  12:15 PM - 1:30 PM/);
+  assert.match(text, /Food Clean Up  1:30 PM - 2:30 PM/);
+  assert.doesNotMatch(text, /Game Booths/);
+});
 test('participant email uses singular for one slot and omits option-number lines', () => {
   const text = participantText({ full_name: 'Volunteer', slots: [44] });
   assert.match(text, /Here is your selection\./);

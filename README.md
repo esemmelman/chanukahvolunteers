@@ -1,6 +1,6 @@
 # Chanukah Carnival - November 8th
 
-Volunteer signup form patterned after the Mealtrain app. Name, Email, and Cell appear above 44 slots across Set Up Game Booths (5), Food Prep (5), Food Service 11:00 AM (5), Food Service 12:15 PM (3), Food Clean Up (3), Game Booths 11:00 AM (7), Game Booths 12:15 PM (7), Prize Table 11:00 AM (1), Prize Table 12:15 PM (1), Tickets Table 11:00 AM (2), Tickets Table 12:15 PM (1), and Break Down Booths (4). Selecting a checkbox previews your name on its underline. Submit saves the selected slots; Cancel clears unsaved entries. Filled slots show saved names and cannot be selected. Names refresh every 15 seconds.
+Volunteer signup form patterned after the Mealtrain app. Name, Email, and Cell appear above 46 slots across Set Up Game Booths (5), Food Prep (5), Food Service 11:00 AM (5), Food Service 12:15 PM (4), Food Clean Up (4), Game Booths 11:00 AM (7), Game Booths 12:15 PM (7), Prize Table 11:00 AM (1), Prize Table 12:15 PM (1), Tickets Table 11:00 AM (2), Tickets Table 12:15 PM (1), and Break Down Booths (4). Selecting a checkbox previews your name on its underline. Submit saves the selected slots; Cancel clears unsaved entries. Filled slots show saved names and cannot be selected. Names refresh every 15 seconds.
 
 Serve this directory with any static web server or GitHub Pages; no build or dependencies are required.
 
@@ -16,3 +16,5 @@ Submit saves the signup first, then sends a notification to esemmoc@gmail.com an
 
 
 Both Game Booths shifts list Football Toss, Bounce House, Bowling Pins, Bean Bag/Ring/Latke Toss, Dreidel Spin, Basketball Hoops, and Other in that order. Retired eighth options (slot IDs 29 and 37) are omitted; all other slot IDs remain stable to preserve saved assignments.
+
+The Open checkbox beside the title shows only unfilled slots and hides sections with no openings. New food service and cleanup slots use IDs 47 and 48; existing assignments keep their IDs.

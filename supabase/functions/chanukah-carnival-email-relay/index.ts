@@ -3,8 +3,8 @@ export const sections = [
   { title: 'Set Up Game Booths  8:00 AM - 10:00 AM', start: 1, count: 5 },
   { title: 'Food Prep  9:00 AM - 11:00 AM', start: 6, count: 5 },
   { title: 'Food Service  11:00 AM - 12:15 PM', start: 11, count: 5 },
-  { title: 'Food Service  12:15 PM - 1:30 PM', start: 16, count: 3 },
-  { title: 'Food Clean Up  1:30 PM - 2:30 PM', start: 19, count: 3 },
+  { title: 'Food Service  12:15 PM - 1:30 PM', start: 16, count: 3, extraSlot: 47 },
+  { title: 'Food Clean Up  1:30 PM - 2:30 PM', start: 19, count: 3, extraSlot: 48 },
   { title: 'Game Booths  11:00 AM - 12:15 PM', start: 22, count: 8, options: boothNames },
   { title: 'Game Booths  12:15 PM - 1:30 PM', start: 30, count: 8, options: boothNames },
   { title: 'Prize Table  11:00 AM - 12:15 PM', start: 38, count: 1 },
@@ -15,13 +15,13 @@ export const sections = [
 ];
 export function selectedOptions(slots) {
   return sections.map(section => {
-    const selected = slots.filter(slot => slot >= section.start && slot < section.start + section.count).map(slot => section.options ? section.options[slot - section.start] : slot - section.start + 1);
+    const selected = slots.filter(slot => slot === section.extraSlot || (slot >= section.start && slot < section.start + section.count)).map(slot => slot === section.extraSlot ? section.count + 1 : section.options ? section.options[slot - section.start] : slot - section.start + 1);
     return selected.length ? `${section.title}\nSelected options: ${selected.join(', ')}` : '';
   }).filter(Boolean).join('\n\n');
 }
 export function participantText(row) {
   const selections = sections.map(section => {
-    const selected = row.slots.filter(slot => slot >= section.start && slot < section.start + section.count);
+    const selected = row.slots.filter(slot => slot === section.extraSlot || (slot >= section.start && slot < section.start + section.count));
     if (!selected.length) return '';
     return section.title + (section.options ? '\n' + selected.map(slot => section.options[slot - section.start]).join(', ') : '');
   }).filter(Boolean).join('\n\n');
@@ -34,7 +34,7 @@ export async function handle(request, env = name => Deno.env.get(name), fetcher 
   if (request.headers.get('apikey') !== 'sb_publishable_JOUqLZDnfGu_yCa6k6FVDQ_AYwpr72i') return reply({ error: 'Invalid API key' }, 401);
   let row;
   try { row = await request.json(); } catch { return reply({ error: 'Invalid request' }, 400); }
-  if (!/^[0-9a-f-]{36}$/i.test(row?.submission_id || '') || typeof row.full_name !== 'string' || row.full_name.length > 120 || typeof row.email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(row.email) || row.email.length > 254 || typeof row.phone !== 'string' || row.phone.length > 40 || !Array.isArray(row.slots) || !row.slots.length || row.slots.length > 46 || row.slots.some(slot => !Number.isInteger(slot) || slot < 1 || slot > 46)) return reply({ error: 'Invalid notification' }, 400);
+  if (!/^[0-9a-f-]{36}$/i.test(row?.submission_id || '') || typeof row.full_name !== 'string' || row.full_name.length > 120 || typeof row.email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(row.email) || row.email.length > 254 || typeof row.phone !== 'string' || row.phone.length > 40 || !Array.isArray(row.slots) || !row.slots.length || row.slots.length > 48 || row.slots.some(slot => !Number.isInteger(slot) || slot < 1 || slot > 48)) return reply({ error: 'Invalid notification' }, 400);
   const key = env('RESEND_API_KEY');
   const configuredFrom = env('REMINDER_EMAIL_FROM');
   if (!key || !configuredFrom) return reply({ error: 'Email unavailable' }, 503);
