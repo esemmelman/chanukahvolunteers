@@ -15,6 +15,6 @@ The browser key in app.js is intentionally publishable. Never add service-role k
 Submit saves the signup first, then sends a notification to esemmoc@gmail.com and a separate confirmation to the saved signup email address through dedicated Supabase Edge Functions. The participant confirmation lists their selected sections, times, and specific game booth names. No coordinator email is sent. The notification includes name, email, cell, and selected sections with specific game booth names or numbered slots for other sections. The DayFlow email relay uses its existing Resend credentials, separate recipients, and stable per-recipient idempotency keys. Email acceptance is recorded in email_notified_at. An email failure preserves the signup and displays a separate warning.
 
 
-Both Game Booths shifts list Football Toss, Bounce House, Bowling Pins, Bean Bag/Ring/Latke Toss, Dreidel Spin, Basketball Hoops, and Other in that order. Retired eighth options (slot IDs 29 and 37) are omitted; all other slot IDs remain stable to preserve saved assignments.
+Both Game Booths shifts list Football Toss, Bounce House, Bowling Pins, Bean Bag/Ring/Latke Toss, Caring Community, Basketball Hoops, and Other in that order. Retired eighth options (slot IDs 29 and 37) are omitted; all other slot IDs remain stable to preserve saved assignments.
 
 The Open checkbox beside the title shows only unfilled slots and hides sections with no openings. New food service and cleanup slots use IDs 47 and 48; existing assignments keep their IDs.

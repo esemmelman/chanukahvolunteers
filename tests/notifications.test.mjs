@@ -82,7 +82,7 @@ test('already notified signup skips sending', async () => {
 });
 
 test('every active booth uses its form label in organizer and participant emails', () => {
-  const labels = ['Football Toss', 'Bounce House', 'Bowling Pins', 'Bean Bag/Ring/Latke Toss', 'Dreidel Spin', 'Basketball Hoops', 'Other'];
+  const labels = ['Football Toss', 'Bounce House', 'Bowling Pins', 'Bean Bag/Ring/Latke Toss', 'Caring Community', 'Basketball Hoops', 'Other'];
   for (const start of [22, 30]) {
     for (const [index, label] of labels.entries()) {
       const slots = [start + index];

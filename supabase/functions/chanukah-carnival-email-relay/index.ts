@@ -1,4 +1,4 @@
-const boothNames = ['Football Toss', 'Bounce House', 'Bowling Pins', 'Bean Bag/Ring/Latke Toss', 'Dreidel Spin', 'Basketball Hoops', 'Other', 'Retired booth'];
+const boothNames = ['Football Toss', 'Bounce House', 'Bowling Pins', 'Bean Bag/Ring/Latke Toss', 'Caring Community', 'Basketball Hoops', 'Other', 'Retired booth'];
 export const sections = [
   { title: 'Set Up Game Booths  8:00 AM - 10:00 AM', start: 1, count: 5 },
   { title: 'Food Prep  9:00 AM - 11:00 AM', start: 6, count: 5 },
